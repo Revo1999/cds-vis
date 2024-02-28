@@ -15,6 +15,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
+from tqdm import tqdm
 
 def is_image_chosen (image_file): #Return true if file is not chosen
     return image_file != chosen_image
@@ -31,14 +32,14 @@ def create_hist(picture_file):
 
 
 def compare_histograms(chosen_image_hist, image_to_compare, metric):
-    return round(cv2.compareHist(chosen_image_hist, create_hist(image_to_compare), metric), 2)
+    return round(cv2.compareHist(chosen_image_hist, create_hist(image_to_compare), metric), 1)
 
 
 
 def update_top_values(dictionary_name, filename, new_value):
     
     # add new dictionary pair with file name and distance value
-    dictionary_name.update({filename:new_value})
+    dictionary_name.update({'filename':filename, 'value':new_value })
 
     #If the list is longer than 5 sort the list and only keep the 5 highest values(to avoid keeping track of all values)
 
@@ -60,7 +61,7 @@ def update_top_values(dictionary_name, filename, new_value):
 chosen_image = 'image_0321.jpg'
 
 directory = os.path.join('..',
-                             'in',)
+                             'data',)
 
 data = os.listdir(directory)
 
@@ -77,14 +78,19 @@ save_tables_location = os.path.join('..',
 
 # Goes trough image file directory
 
-for picture_file in data:
+for picture_file in tqdm(data, colour='green'):
     if is_image_chosen(picture_file): #Continues if the file is not the chosen image
 
         # Load image   
         picture_to_proces = cv2.imread(os.path.join(directory, picture_file))
 
+        print(type(picture_to_proces), 'picture to proces')
+        print(compare_histograms(image_to_compare = picture_to_proces, metric=metric, chosen_image_hist=chosen_image_hist), 'compare histograms')
 
-        update_top_values(top_value_dict, picture_to_proces, compare_histograms(image_to_compare = picture_file, metric=metric, chosen_image_hist=chosen_image_hist))
+
+        #def update_top_values(dictionary_name, filename, new_value):
+
+        update_top_values(top_value_dict, picture_to_proces, compare_histograms(image_to_compare = picture_to_proces, metric=metric, chosen_image_hist=chosen_image_hist))
      
 #create and export dataframe
 
