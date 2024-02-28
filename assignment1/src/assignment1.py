@@ -13,6 +13,8 @@
 
 import cv2
 import numpy as np
+import pandas as pd
+import os
 
 def is_image_chosen (image_file): #Return true if file is not chosen
     return image_file != chosen_image
@@ -58,7 +60,7 @@ def update_top_values(dictionary_name, filename, new_value):
 chosen_image = 'image_0321.jpg'
 
 directory = os.path.join('..',
-                             'data',)
+                             'in',)
 
 data = os.listdir(directory)
 
@@ -67,7 +69,7 @@ metric = cv2.HISTCMP_CHISQR
 top_value_dict = {}
 
 #Creates histogram of chosen image
-chosen_image_hist = create_hist(chosen_image)
+chosen_image_hist = create_hist(cv2.imread(os.path.join(directory, chosen_image)))
 
 
 save_tables_location = os.path.join('..',
@@ -79,14 +81,14 @@ for picture_file in data:
     if is_image_chosen(picture_file): #Continues if the file is not the chosen image
 
         # Load image   
-        cv2.imread(os.path.join(directory, picture_file))
+        picture_to_proces = cv2.imread(os.path.join(directory, picture_file))
 
 
-        update_top_values(top_value_dict, picture_file, compare_histograms(image_to_compare = picture_file))
+        update_top_values(top_value_dict, picture_to_proces, compare_histograms(image_to_compare = picture_file, metric=metric, chosen_image_hist=chosen_image_hist))
      
 #create and export dataframe
 
-write_row = pd.DataFrame({'Filename': [top_value_dict[0]], 'Value' ]})
+write_row = pd.DataFrame({'Filename': [top_value_dict[0]], 'Value':[top_value_dict[1]]})
             
 df = pd.concat([df, write_row], ignore_index=True)
 
