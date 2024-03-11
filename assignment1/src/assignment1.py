@@ -47,6 +47,8 @@ metric = cv2.HISTCMP_CHISQR
 
 top_value_list = []
 
+tablename = 'table'
+
 #Creates histogram of chosen image ..... OBSOBSOBSOBS Normalize
 chosen_image_hist_normalized = create_hist(cv2.imread(os.path.join(directory, chosen_image)))
 
@@ -54,9 +56,14 @@ chosen_image_hist_normalized = create_hist(cv2.imread(os.path.join(directory, ch
 save_tables_location = os.path.join('..',
                                 'out')
 
+progressbar = tqdm(data, desc='Pictures', colour='green')
+
 # Goes trough image file directory
 
-for picture_file in tqdm(data, colour='green'):
+for picture_file in data:
+    
+    progressbar.update(1)
+
     if is_image_chosen(picture_file) and picture_file.endswith(chosen_file_type) : #Continues if the file is not the chosen image
 
         # Load image   
@@ -67,22 +74,21 @@ for picture_file in tqdm(data, colour='green'):
         update_top_values(top_value_list, picture_file, compare_histograms(image_to_compare = picture_to_proces, metric=metric, chosen_image_hist=chosen_image_hist_normalized))
 
     elif picture_file != chosen_image:
-         print(f"Could not read file: {picture_file}, therefore it's been skipped")
+         progressbar.write(f"Could not read file: {picture_file}, therefore it's been skipped")
 
      
 #create and export dataframe
-
-
-
-
-
 top_value_list = sorted(top_value_list, key=lambda x: x[1])
 top_value_list = top_value_list[:5]
 
-print(top_value_list)
+progressbar.close()
 
-'''write_row = pd.DataFrame({'Filename': [top_value_dict[0,1]], 'Value':[top_value_dict[1,1]]})
-            
-df = pd.concat([df, write_row], ignore_index=True)
 
-df.to_csv(f"{save_tables_location}/{folder}_table.csv", index=False)'''
+
+#column name dims
+df2 = pd.DataFrame(top_value_list, columns = ['Filename', 'Distance'])
+
+
+df2.to_csv(f"{save_tables_location}/{tablename}.csv", index=False)
+
+print('Done! Table created.')
