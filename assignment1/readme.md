@@ -2,9 +2,10 @@
 ###### Victor Rasmussen, Visual Analytics, Aarhus University
 -----
 
-This project include a assignment1.py files that go through txt and extracts: relative frequency of nouns, verbs, adjective, and adverbs per 10,000 words, aswell as total number of unique PER, LOC, ORGS per text, using spaCy.
+This project include a assignment1.py files that go through 1300 .jpg's (From the 17 flowers dataset), creates a histogram, and compares them with a chosen image, resulting in a distance value. The five highest values are printed in to a csv in the out folder.
 
-More information and download link for data (Beware of terms of usage!): [click here](https://ota.bodleian.ox.ac.uk/repository/xmlui/handle/20.500.12024/2457)
+
+More information and download link for data (Beware of terms of usage!): [click here](https://www.robots.ox.ac.uk/~vgg/data/flowers/17/)
 
 ## Project Structure
 

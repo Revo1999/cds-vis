@@ -1,0 +1,2 @@
+sudo apt-get install -y python3-opencv
+pip install tqdm numpy scikit-learn tensorflow opencv-python
