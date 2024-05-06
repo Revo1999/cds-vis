@@ -1,7 +1,7 @@
 import os
-from helperfunctions import work_here, colorbank, ctext
+import vrashelper as vh # A small package containing a work_here and console text definitions i use often
 import glob
-from sys import exit
+import sys
 from tqdm import tqdm as tqdm_bar #Renaming tqdm avoids an error (is used in other packages)
 import tensorflow as tf
 import gc
@@ -56,25 +56,25 @@ def check_files(file_list, wanted_filetype):
                 wrong_filetype.append(file)
     
     if len(wrong_filetype) == 0:
-        print(colorbank.hackergreen + "All files are the right filetype"  + colorbank.default)
+        print(vh.colorbank.hackergreen + "All files are the right filetype"  + vh.colorbank.default)
     elif len(wrong_filetype) > 0:
-        print(colorbank.warning + f"{ctext.bold}These files dont comply with {wanted_filetype} filetype:{ctext.default}")
-        print(colorbank.error_red + "\n".join(wrong_filetype) + colorbank.default)
+        print(vh.colorbank.warning + f"{vh.ctext.bold}These files dont comply with {wanted_filetype} filetype:{vh.ctext.default}")
+        print(vh.colorbank.error_red + "\n".join(wrong_filetype) + vh.colorbank.default)
         print("\nDo you wish to disregard these?\n")
         
     input = take_input()
 
     if input == True:
-        print (ctext.remove_line *2) #Removes 2 last lines from console
+        print (vh.ctext.remove_line *2) #Removes 2 last lines from console
         files_removed = 0
         print("\nRemoving files from processing list...")
         for wrong_files in wrong_filetype:
              file_list.remove(wrong_files)
              files_removed += 1
-        print(colorbank.hackergreen + f"{ctext.nline}{files_removed} files removed" + colorbank.default)
+        print(vh.colorbank.hackergreen + f"{vh.ctext.nline}{files_removed} files removed" + vh.colorbank.default)
     elif input == False:
-        print (ctext.remove_line) #Removes last input line from console
-        print(colorbank.error_red + "exiting..." + colorbank.default)
+        print (vh.ctext.remove_line) #Removes last input line from console
+        print(vh.colorbank.error_red + "exiting..." + vh.colorbank.default)
         #Exits program
         sys.exit(1)
 
@@ -87,8 +87,8 @@ def take_input():
     elif inp.lower() == "n" or inp.lower() == "no":
         return False
     else:
-        print (ctext.remove_line) #Removes last input line from console
-        print(colorbank.error_red + "\nwrong input!" + colorbank.default)
+        print (vh.ctext.remove_line) #Removes last input line from console
+        print(vh.colorbank.error_red + "\nwrong input!" + vh.colorbank.default)
         take_input()
           
 
@@ -99,13 +99,13 @@ def create_labels_list(directory):
 def image_loader(image_paths_to_proces, folder_step):
     #loading image and resizing
     images_list = [load_img(img_path, target_size=(224, 224)) for img_path in tqdm_bar(image_paths_to_proces, desc="Loading images", colour = 'green')]
-    print(ctext.nline) #new line
+    print(vh.ctext.nline) #new line
     #converting images to np.array object
     images_list = [img_to_array(image) for image in tqdm_bar(images_list, desc="Converting images to numpy-arrays", colour = 'green')]
-    print(ctext.nline) #new line
+    print(vh.ctext.nline) #new line
     #subtracting the mean RGB value
     image_list = [preprocess_input(image) for image in tqdm_bar(images_list, desc="Subtracting the mean RGB value", colour = 'green')]
-    print(ctext.nline) #new line
+    print(vh.ctext.nline) #new line
 
     #Needs to be numpy array/tensor "str" is incompatible type
     labels_list = [image_path.split("/")[folder_step] for image_path in image_paths_to_proces]
@@ -113,7 +113,7 @@ def image_loader(image_paths_to_proces, folder_step):
 
 def load_vgg16():
     # loading the model
-    print(colorbank.blue + "Loading/Downloading VGG16 model" + colorbank.default)
+    print(vh.colorbank.blue + "Loading/Downloading VGG16 model" + vh.colorbank.default)
     model = VGG16(include_top=False, 
               pooling='avg',
               input_shape=(224, 224, 3))
@@ -131,7 +131,7 @@ def load_vgg16():
     model = Model(inputs=model.inputs, 
                 outputs=output)
 
-    print(colorbank.hackergreen + "Model loaded" + colorbank.default)
+    print(vh.colorbank.hackergreen + "Model loaded" + vh.colorbank.default)
     return model
 
 def plot_history(H, epochs):
@@ -154,9 +154,9 @@ def plot_history(H, epochs):
     plt.tight_layout()
     plt.legend()
     plt.show()
-    plt.savefig('../out/Figure1')
+    plt.savefig('../out/Figure2')
 
-work_here()
+vh.work_here()
 
 directory = ["..", "in", "Tobacco3482"]
 directory_path = os.path.join(*directory)
@@ -215,7 +215,7 @@ print(classification_report(y_test.argmax(axis=1),
                             predictions.argmax(axis=1),
                             target_names=labels))
 
-with open("../out/report1.txt", "w") as file:
+with open("../out/report3.txt", "w") as file:
         file.write(classification_report(y_test.argmax(axis=1),
                             predictions.argmax(axis=1),
                             target_names=labels))
@@ -225,7 +225,7 @@ print("Classification report saved!")
 
 
 print("saving model")
-model.save('../model/model.h5')
+model.save('../model/model2.h5')
 print("model saved")
 
 
