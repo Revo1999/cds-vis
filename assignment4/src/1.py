@@ -67,27 +67,42 @@ def take_input():
         print(vh.colorbank.error_red + "\nwrong input!" + vh.colorbank.default)
         take_input()
 
-
+def image_verify_and_load(img_path):
+    #Tested this with corrupted images and it works
+    try:
+        # Opens Image
+        with Image.open(img_path) as img:
+            img.verify()
+            # If verification is succesful assign image
+            image = Image.open(img_path)
+            return image
+    except Exception as e:
+        # Image couldnt load do this tell me why
+        print(f"Error opening image '{img_path}': {e}")
+        return None
 
 def image_loader(image_paths_to_proces):
 
-    images = [Image.open(img_path) for img_path in tqdm_bar(image_paths_to_proces, desc="Loading images", colour='green')]
+    images = [image_verify_and_load(img_path) for img_path in tqdm_bar(image_paths_to_proces, desc="Loading images", colour='green')]
 
-    
+     # Keeps the values if not None, effectively removing all errors caught by img.verify() by Pillow used in image_verify_and_load()
+    images = [image for image in images if image is not None]
+
     print(vh.ctext.nline) #new line
 
     return images
 
 
 def image_processing(images):
-    # Step 1: Initialize an empty DataFrame
 
     results = {"year":[],
                "faces": []}
 
 
-    # Step 2: Process each image
+    # Processing each image from the processing list, it can only batch process pictures with the same pixel size
     for i in tqdm_bar(range(len(images)),desc="Using facedetection on images", colour="green"):
+       
+       
         # Detect faces in the image
         boxes, _ = mtcnn.detect(images[i])
 
@@ -101,12 +116,15 @@ def image_processing(images):
         except:
             boxes = 0
 
-
+        # Append results to a dict
         results["year"].append(year)
         results["faces"].append(boxes)
 
     return results
 
+def dict_to_csv(data, savepath):
+    dataframe = pl.from_dict(data)
+    dataframe.write_csv(savepath)
 
 
 vh.work_here()
@@ -121,19 +139,30 @@ images = image_loader(files_to_proces)
 
 mtcnn = MTCNN(keep_all=True)
 
-
-# For testing 
-images = images[:100]
-
-
 results = image_processing(images)
 
-dataframe = pl.from_dict(results)
+dict_to_csv(data = results, savepath = "../out/results.csv")
 
-dataframe.write_csv("../out/results.csv")
+images = images[:1]
 
-print(dataframe)
+def data_filter(data):
+    
+    results = {"decade":[],
+               "pages": [],
+               "faces": []}
 
 
+    lower_limit = 1980
+    upper_limit = 1989
 
+    # Filter the dataframe by a lower and upper limit
+    decade_data = data.filter((pl.col('year') >= lower_limit) & (pl.col('year') <= upper_limit))
 
+    pages_amount = decade_data.value_counts('year') # Amount of pages
+    faces_amount = decade_data.sum('faces') # Amount of faces
+
+    results["decade"].append(year)
+    results["pages"].append(pages_amount)
+    results["faces"].append(faces_amount)
+
+    return results
