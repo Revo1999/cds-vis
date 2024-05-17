@@ -75,6 +75,7 @@ def image_verify_and_load(img_path):
             img.verify()
             # If verification is succesful assign image
             image = Image.open(img_path)
+            os.path.getsize(img_path)
             return image
     except Exception as e:
         # Image couldnt load do this tell me why
@@ -94,31 +95,31 @@ def image_loader(image_paths_to_proces):
 
 
 def image_processing(images):
-
     results = {"year":[],
                "faces": []}
 
-
     # Processing each image from the processing list, it can only batch process pictures with the same pixel size
     for i in tqdm_bar(range(len(images)),desc="Using facedetection on images", colour="green"):
-       
-       
-        # Detect faces in the image
-        boxes, _ = mtcnn.detect(images[i])
-
-        # Extract the year from the file path
-        year = re.split(r'/|-', files_to_proces[i])[4]
-        
-
-        # If result is null it will use zero instead, (it cannot use len of 'None'). And then len can see how many faces are detected
         try:
-            boxes = len(boxes)
-        except:
-            boxes = 0
+            # Detect faces in the image
+            boxes, _ = mtcnn.detect(images[i])
 
-        # Append results to a dict
-        results["year"].append(year)
-        results["faces"].append(boxes)
+            # Extract the year from the file path
+            '''year = re.split(r'/|-', files_to_proces[i])[4]'''
+
+            # If result is null it will use zero instead, (it cannot use len of 'None'). And then len can see how many faces are detected
+            try:
+                boxes = len(boxes)
+            except:
+                boxes = 0
+
+            # Append results to a dict
+            results["year"].append(files_to_proces[i])
+            results["faces"].append(boxes)
+        except OSError as e:
+            # excepting truncation error (    these are not caught in img.verify()    )
+            print(f"Error processing image {files_to_proces[i]}: {e}")
+            continue  # Continues
 
     return results
 
@@ -126,43 +127,47 @@ def dict_to_csv(data, savepath):
     dataframe = pl.from_dict(data)
     dataframe.write_csv(savepath)
 
+def extract_decade(filename):
+    splitted_text = re.split(r'/|-', filename)[4]
+    # Calculates the remainder when decade is divided by 10, this means I always can turn the value to the lower then, effectivelyextracting the decade
+    decade = int(splitted_text) - (int(splitted_text) % 10)
+    return decade
 
-vh.work_here()
+def convert_table(dataset):
+    data = dataset
+    # Apply extract_decade() to all values in the year column
+    data = data.with_columns(data['year'].map_elements(extract_decade).alias('decade'))
 
-directory = ["..", "in"]
+    # Faces is group by decade and sum amount of faces, then pages counts the amount of decades from the decade list
+    occur_decade_faces = data.group_by("decade").agg([pl.col("faces").sum(), pl.len().alias("pages")])
 
-directory_path = os.path.join(*directory)
 
-files_to_proces = check_files(file_list=list_files(directory_path), wanted_filetype=".jpg")
 
-images = image_loader(files_to_proces)
+    # divides faces with pages to get faces pr. page. Float needs to be assigned when casted.
+    results = occur_decade_faces.with_columns((pl.col("faces").cast(pl.Float64) / pl.col("pages").cast(pl.Float64)).alias("faces_per_page"))
 
-mtcnn = MTCNN(keep_all=True)
-
-results = image_processing(images)
-
-dict_to_csv(data = results, savepath = "../out/results.csv")
-
-images = images[:1]
-
-def data_filter(data):
+    results_sorted = results.sort("decade")
     
-    results = {"decade":[],
-               "pages": [],
-               "faces": []}
+    return results_sorted
 
 
-    lower_limit = 1980
-    upper_limit = 1989
+def main():
+    directory = ["..", "in"]
 
-    # Filter the dataframe by a lower and upper limit
-    decade_data = data.filter((pl.col('year') >= lower_limit) & (pl.col('year') <= upper_limit))
+    directory_out = ["..", "out", "results.csv"]
 
-    pages_amount = decade_data.value_counts('year') # Amount of pages
-    faces_amount = decade_data.sum('faces') # Amount of faces
+    directory_path = os.path.join(*directory)
 
-    results["decade"].append(year)
-    results["pages"].append(pages_amount)
-    results["faces"].append(faces_amount)
+    files_to_proces = check_files(file_list=list_files(directory_path), wanted_filetype=".jpg")
 
-    return results
+    images = image_loader(files_to_proces)
+
+    mtcnn = MTCNN(keep_all=True)
+
+    results = image_processing(images)
+
+    dict_to_csv(convert_table(results), os.path.join(*directory_out))
+
+
+if __name__ == "__main__":
+    main()
