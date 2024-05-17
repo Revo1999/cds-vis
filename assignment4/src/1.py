@@ -1,3 +1,10 @@
+'''
+Assignment 4
+    Victor Rasmussen
+        Visual Analytics, Aarhus University
+            17-05-2024
+'''
+
 import vrashelper as vh
 import sys
 import glob
