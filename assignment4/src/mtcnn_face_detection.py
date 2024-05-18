@@ -279,8 +279,6 @@ def main():
 
     images = image_loader(files_to_proces)
 
-    images = images[:50]
-
     mtcnn = MTCNN(keep_all=True)
 
     results = image_processing(images=images, model=mtcnn, file_list=files_to_proces)
