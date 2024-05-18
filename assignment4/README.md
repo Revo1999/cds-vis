@@ -1,12 +1,57 @@
-# Assignment 4
+# Assignment 4 - Detecting faces in historical newspapers
 
 #### Victor Rasmussen
 ##### Aarhus University, Language Analytics
 
-<br>
+This assignment works with a corpus of historic Swiss newspapers: the Journal de Genève (JDG, 1826-1994); the Gazette de Lausanne (GDL, 1804-1991); and the Impartial (IMP, 1881-2017). The program uses a MTCNN (Multi-task Cascaded Convolutional Networks) to detect faces in the scans of these newspaper.
+
+The program works in three phases:
+> 1. Uses MTCNN model on all scanned images and creates results.csv a csv with two columns one with a relative filepath, and the amount of faces
+>
+> 2. It splits the csv into individual datasets for each unique newspaper name. Then it will perform different calculations and write new csv's. (These calculations will be elaborated in the results section)
+>
+> 3. Reads the csv produced in second phase, and visualizing these datasets using altair (using vega-fusion for polars dataframe support)
+
+<br><br>
+
+# Folder structure
+
+```
+Assignment 4/
+├── analysis/
+│   ├── analyzer.py
+│   ├── run.sh
+│   └── dimensionschart.csv
+├── in/
+│   ├── GDL
+│   ├── IMP
+│   ├── JDG
+│   └── README-images.txt
+├── out/
+│   ├── faces_per_page.csv
+│   ├── LineChart.png
+│   ├── LineChart1.png
+│   ├── pages_with_faces.csv
+│   └── results.csv
+├── src/
+│   └── mtcnn_face_detection.py     
+├── createVEnv.sh
+├── image.png
+├── README.md
+├── requirements.txt
+└── run.sh
+```
+<br><br>
+
+# Usage
 It will prompt you to check
 
 > ![](image.png?raw=true)
+
+## Data Access
+
+[click here!](https://zenodo.org/records/3706863)
+
 
 
 ### Results
