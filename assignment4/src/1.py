@@ -15,6 +15,8 @@ from tqdm import tqdm as tqdm_bar #Renaming tqdm avoids an error (is used in oth
 from facenet_pytorch import MTCNN
 import torch
 import re
+import altair as alt
+import vegafusion as vf
 
 
 
@@ -22,7 +24,7 @@ def list_files(directory):
     folders = os.listdir(directory)
 
     all_files = []
-    for root, dirs, files in os.walk(directory_path, topdown=True):
+    for root, dirs, files in os.walk(directory, topdown=True):
         for filenames in files:
             all_files.append(os.path.join(root, filenames))
 
@@ -101,7 +103,7 @@ def image_loader(image_paths_to_proces):
     return images
 
 
-def image_processing(images):
+def image_processing(images, model, file_list):
     results = {"year":[],
                "faces": []}
 
@@ -109,10 +111,7 @@ def image_processing(images):
     for i in tqdm_bar(range(len(images)),desc="Using facedetection on images", colour="green"):
         try:
             # Detect faces in the image
-            boxes, _ = mtcnn.detect(images[i])
-
-            # Extract the year from the file path
-            '''year = re.split(r'/|-', files_to_proces[i])[4]'''
+            boxes, _ = model.detect(images[i])
 
             # If result is null it will use zero instead, (it cannot use len of 'None'). And then len can see how many faces are detected
             try:
@@ -121,11 +120,11 @@ def image_processing(images):
                 boxes = 0
 
             # Append results to a dict
-            results["year"].append(files_to_proces[i])
+            results["year"].append(file_list[i])
             results["faces"].append(boxes)
         except OSError as e:
             # excepting truncation error (    these are not caught in img.verify()    )
-            print(f"Error processing image {files_to_proces[i]}: {e}")
+            print(f"Error processing image {file_list[i]}: {e}")
             continue  # Continues
 
     return results
@@ -134,21 +133,74 @@ def dict_to_csv(data, savepath):
     dataframe = pl.from_dict(data)
     dataframe.write_csv(savepath)
 
+def seperate_newspaper(data):
+    
+    """
+    Separates the dataset by newspaper.
+
+    This function adds a new column 'newspaper' extracted from the 'year' column,
+    and returns a list of datasets, each filtered the unique newspaper name.
+    """
+
+    dataset_list = []
+
+    # Extracts newspapernames from the year column (which contains relative paths)
+    data = data.with_columns((pl.col("year").map_elements(extract_papername).cast(pl.Utf8)).alias("newspaper"))
+
+    # Gets unique newspaper names
+    unique_papers = data.select(pl.col("newspaper").unique()).to_series()
+
+    # Filters the data for each unique newspaper and store in the list
+    for unique_paper in unique_papers:
+        unique_paper_dataset = data.filter(pl.col("newspaper") == unique_paper)
+        dataset_list.append(unique_paper_dataset)
+
+    return dataset_list
+
+def extract_papername(filename):
+    #Extracts papername from absolute path
+    splitted_text = re.split(r'/|-', filename)
+    paper = splitted_text[2]
+
+    return paper
+
 def extract_decade(filename):
-    splitted_text = re.split(r'/|-', filename)[4]
-    # Calculates the remainder when decade is divided by 10, this means I always can turn the value to the lower then, effectivelyextracting the decade
-    decade = int(splitted_text) - (int(splitted_text) % 10)
+    #Extracts year from absolute path
+    splitted_text = re.split(r'/|-', filename)
+    year = splitted_text[4]
+
+    # Calculates the remainder when year is divided by 10, this means I always can turn the value to the lower then, effectively extracting the decade
+    decade = int(year) - (int(year) % 10)
     return decade
 
-def convert_table(dataset):
-    data = dataset
+def pages_with_faces_table(data):
     # Apply extract_decade() to all values in the year column
     data = data.with_columns(data['year'].map_elements(extract_decade).alias('decade'))
 
-    # Faces is group by decade and sum amount of faces, then pages counts the amount of decades from the decade list
-    occur_decade_faces = data.group_by("decade").agg([pl.col("faces").sum(), pl.len().alias("pages")])
+    # Calculates the number of pages with faces by creating a new column with 0 or 1
+    data = data.with_columns((data['faces'] > 0).cast(pl.Int8).alias("has_faces"))
+
+    # Groups by decade and newspaper, then sums the binary values to count the pages with faces
+    occur_decade_faces = data.group_by(["decade", "newspaper"]).agg([
+        pl.len().alias("total_pages"),
+        pl.sum("has_faces").alias("pages_with_faces")
+    ])
+
+    # Calculate percent by dividing pages with faces with total pages times 100
+    results = occur_decade_faces.with_columns(
+        (pl.col("pages_with_faces").cast(pl.Float64) / pl.col("total_pages").cast(pl.Float64)*100)
+        .alias("percent_of_pages_with_face"))
+
+    return results
 
 
+
+def faces_per_page_table(data):
+    # Apply extract_decade() to all values in the year column
+    data = data.with_columns(data['year'].map_elements(extract_decade).alias('decade'))
+
+    
+    occur_decade_faces = data.group_by(["decade", "newspaper"]).agg([pl.col("faces").sum(), pl.len().alias("pages")])
 
     # divides faces with pages to get faces pr. page. Float needs to be assigned when casted.
     results = occur_decade_faces.with_columns((pl.col("faces").cast(pl.Float64) / pl.col("pages").cast(pl.Float64)).alias("faces_per_page"))
@@ -158,7 +210,65 @@ def convert_table(dataset):
     return results_sorted
 
 
+
+def data_conversion(data, method):
+    
+    """
+
+    Adds all dataset operations together
+
+    First it seperates the dataset into each paper, then it calculates faces_per_page (also adding faces and pages columns)
+
+    Then the datasets are concated back together again
+
+    """
+
+    dataset_list = []
+
+    for dataset in seperate_newspaper(data=data): # Seperates datasets into newspaper
+        converted_dataset = method(dataset) # applies faces_per_page_table function to all datasets
+        dataset_list.append(converted_dataset)
+    
+    joined_data = pl.concat(dataset_list) #joins data back together
+
+    return joined_data
+
+def visualize_line_chart(data, y_value, y_title):
+
+    y_value = str(y_value + ":Q")
+
+    # Creates chat instance
+    chart = alt.Chart(data).transform_filter(
+        alt.datum.newspaper != ""  # Filter out empty newspaper names
+    ).encode(
+        alt.Color("newspaper").legend(None)
+    )
+
+    # Draws the line
+    line = chart.mark_line().encode(
+        x=alt.X("decade:Q", title="Decade"),  # Title for the x-axis
+        y=alt.Y(y_value, title=y_title)  # Title for the y-axis
+    )
+
+    # Finds last value
+    label = chart.encode(
+        x=alt.X('max(decade):Q', title="Decade"),  # Title for the x-axis
+        y=alt.Y(y_value, title=y_title).aggregate(argmax='decade'),  # Title for the y-axis
+        text='newspaper'
+    )
+
+    # Creates text labels
+    text = label.mark_text(align='left', dx=4)
+
+    # Creates circles
+    circle = label.mark_circle()
+
+    # Combines all from the chart and draws it with width and height settings applied
+    return line + circle + text.properties(width=500, height=400)
+
 def main():
+    vh.work_here()
+
     directory = ["..", "in"]
 
     directory_out = ["..", "out", "results.csv"]
@@ -169,12 +279,33 @@ def main():
 
     images = image_loader(files_to_proces)
 
+    images = images[:50]
+
     mtcnn = MTCNN(keep_all=True)
 
-    results = image_processing(images)
+    results = image_processing(images=images, model=mtcnn, file_list=files_to_proces)
 
-    dict_to_csv(convert_table(results), os.path.join(*directory_out))
+    dataframe = pl.from_dict(results)
 
+    dataframe.write_csv("../out/results.csv")
+
+    filepath = "../out/results.csv"
+    
+    data = pl.read_csv(filepath)
+
+    faces_per_page_data = (data_conversion(data=data, method=faces_per_page_table))
+
+    pages_with_face_data = (data_conversion(data=data, method=pages_with_faces_table))
+
+    faces_per_page_data.write_csv("../out/faces_per_page.csv")
+
+    pages_with_face_data.write_csv("../out/pages_with_faces.csv")
+
+    vf.enable()
+
+    visualize_line_chart(data=faces_per_page_data, y_value="faces_per_page", y_title="faces per page").save("../out/LineChart.png")
+
+    visualize_line_chart(data=pages_with_face_data, y_value="percent_of_pages_with_face", y_title="Percent of pages with face").save("../out/LineChart1.png")
 
 if __name__ == "__main__":
     main()
