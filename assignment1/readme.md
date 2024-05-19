@@ -1,11 +1,14 @@
 # Assignment 1 
-###### Victor Rasmussen, Visual Analytics, Aarhus University
------
+
+###### Victor Rasmussen, Visual Analytics, Aarhus University 
+<br>
+
+
 
 This project include a assignment1.py files that go through 1300 .jpg's (From the 17 flowers dataset), creates a histogram, and compares them with a chosen image, resulting in a distance value. The five highest values are printed in to a csv in the out folder.
 
 
-More information and download link for data (Beware of terms of usage!): [click here](https://www.robots.ox.ac.uk/~vgg/data/flowers/17/)
+More information and download link for data (Beware of terms of usage!): [click here!](https://www.robots.ox.ac.uk/~vgg/data/flowers/17/)
 
 ## Project Structure
 
@@ -31,6 +34,7 @@ opencv (cv2)
 numpy
 tqdm
 pandas
+argparse
 ```
 
  ### ```bash start.sh``` will download dependencies
@@ -48,11 +52,8 @@ Insert data from USEcorpus to match what is shown i project structure or change 
 <br>
 <br>
 
-### These settings can be changed in  when runned:
+### Arguments for ```assignment1.py```:
 
+- `-I`, `--Image_name`: Name the image file you want to compare to the rest of the images (default: "image_0321.jpg").<br><br>
 
-Change the input path: 
-
-
-Change the output path:
-
+    Example: ```python assignment1.py -I image_0001.jpg```

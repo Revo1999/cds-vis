@@ -1,16 +1,22 @@
-#/work/VictorRasmussen#3454/cds.vis/cds-vis/assignment1/data/image_0321.jpg
+'''
+Assignment 1
+    Victor Rasmussen
+        Visual Analytics, Aarhus University
+            17-05-2024
+'''
+
+#The chosen image is ../data/image_0321.jpg
 
 #Dependencies
-
 import cv2
 import numpy as np
 import pandas as pd
 import os
 from tqdm import tqdm
+import argparse
 
-def is_image_chosen (image_file): #Return true if file is not chosen
+def is_image_chosen (image_file, chosen_image): #Return true if file is not chosen
     return image_file != chosen_image
-
 
 
 def create_hist(picture_file):
@@ -24,71 +30,82 @@ def compare_histograms(chosen_image_hist, image_to_compare, metric):
     return round(cv2.compareHist(chosen_image_hist, create_hist(image_to_compare), metric), 1)
 
 
-
-def update_top_values(list_name, filename, new_value):
+def add_top_values(list_name, filename, new_value):
     
-    # add new dictionary pair with file name and distance value
-    #dictionary_name.update({'filename':filename, 'value':new_value})
     list_name.append( (filename, new_value) )
-    #If the list is longer than 5 sort the list and only keep the 5 highest values(to avoid keeping track of all values)
+
+def comparer(chosen_image, chosen_file_type, directory, data, metric):
+
+    top_value_list = []
+
+    #Creates histogram of chosen image
+    chosen_image_hist_normalized = create_hist(cv2.imread(os.path.join(directory, chosen_image)))
+
+    progressbar = tqdm(data, desc='Pictures', colour='green')
+
+    # Goes trough image file directory
+
+    for picture_file in data:
+        
+        progressbar.update(1)
+
+        if is_image_chosen(picture_file, chosen_image) and picture_file.endswith(chosen_file_type) : #Continues if the file is not the chosen image
+
+            # Load image   
+            picture_to_proces = cv2.imread(os.path.join(directory, picture_file))
+
+            #def update_top_values(dictionary_name, filename, new_value):
+
+            add_top_values(top_value_list, picture_file, compare_histograms(image_to_compare = picture_to_proces, metric=metric, chosen_image_hist=chosen_image_hist_normalized))
+
+        elif picture_file != chosen_image:
+            progressbar.write(f"{picture_file} is not a jpeg, therefore it's been skipped")
+
+    progressbar.close()
+
+    #create and export dataframe
+    top_value_list = sorted(top_value_list, key=lambda x: x[1])
+    top_value_list = top_value_list[:5]
+
+    return top_value_list
 
 
+def argument_collection():
+    parser = argparse.ArgumentParser()
+   
+    parser.add_argument(
+            "-I",
+            "--Image_name",
+            default="image_0321.jpg",
+            help="Name of the image to compare to the rest of the dataset")
+        
+    return parser.parse_args()
 
-chosen_image = 'image_0321.jpg'
+def main():
+    directory = os.path.join('..',
+                                'data',)
 
-chosen_file_type = ".jpg"
+    data = os.listdir(directory)
 
-directory = os.path.join('..',
-                             'data',)
+    metric = cv2.HISTCMP_CHISQR
 
-data = os.listdir(directory)
+    top_value_list = []
 
-metric = cv2.HISTCMP_CHISQR
+    save_tables_location = os.path.join('..',
+                                        'out')
 
-top_value_list = []
+    chosen_image_name = argument_collection().Image_name
 
-tablename = 'table'
+    results = comparer(chosen_image=chosen_image_name, chosen_file_type=".jpg", directory=directory, data=data, metric=metric)
 
-#Creates histogram of chosen image ..... OBSOBSOBSOBS Normalize
-chosen_image_hist_normalized = create_hist(cv2.imread(os.path.join(directory, chosen_image)))
-
-
-save_tables_location = os.path.join('..',
-                                'out')
-
-progressbar = tqdm(data, desc='Pictures', colour='green')
-
-# Goes trough image file directory
-
-for picture_file in data:
-    
-    progressbar.update(1)
-
-    if is_image_chosen(picture_file) and picture_file.endswith(chosen_file_type) : #Continues if the file is not the chosen image
-
-        # Load image   
-        picture_to_proces = cv2.imread(os.path.join(directory, picture_file))
-
-        #def update_top_values(dictionary_name, filename, new_value):
-
-        update_top_values(top_value_list, picture_file, compare_histograms(image_to_compare = picture_to_proces, metric=metric, chosen_image_hist=chosen_image_hist_normalized))
-
-    elif picture_file != chosen_image:
-         progressbar.write(f"Could not read file: {picture_file}, therefore it's been skipped")
-
-     
-#create and export dataframe
-top_value_list = sorted(top_value_list, key=lambda x: x[1])
-top_value_list = top_value_list[:5]
-
-progressbar.close()
+    #column name dims
+    df2 = pd.DataFrame(results, columns = ['Filename', 'Distance'])
 
 
+    df2.to_csv(f"{save_tables_location}/{chosen_image_name}_results.csv", index=False)
 
-#column name dims
-df2 = pd.DataFrame(top_value_list, columns = ['Filename', 'Distance'])
+    print('Done! Table created.')
 
+if __name__ == "__main__":
+    main()
 
-df2.to_csv(f"{save_tables_location}/{tablename}.csv", index=False)
-
-print('Done! Table created.')
