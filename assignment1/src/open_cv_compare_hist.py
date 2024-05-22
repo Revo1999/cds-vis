@@ -14,6 +14,8 @@ import pandas as pd
 import os
 from tqdm import tqdm
 import argparse
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 def is_image_chosen (image_file, chosen_image): #Return true if file is not chosen
     return image_file != chosen_image
@@ -98,11 +100,26 @@ def main():
 
     results = comparer(chosen_image=chosen_image_name, chosen_file_type=".jpg", directory=directory, data=data, metric=metric)
 
-    #column name dims
-    df2 = pd.DataFrame(results, columns = ['Filename', 'Distance'])
+    results.append( (argument_collection().Image_name, 0) )
+
+    df2 = pd.DataFrame(results, columns = ['Filename', 'Distance']).sort_values(by=['Distance'])
+
+    df2.to_csv(f"{save_tables_location}/compare_hist_{chosen_image_name}_results.csv", index=False)
 
 
-    df2.to_csv(f"{save_tables_location}/{chosen_image_name}_results.csv", index=False)
+    f, axarr = plt.subplots(1, 6, figsize=(15, 6))
+    f.subplots_adjust(wspace=2)
+
+    axarr[0].imshow(mpimg.imread(os.path.join(directory, chosen_image_name)))
+    axarr[0].axis('off')
+    axarr[0].set_title(f'Chosen image: {chosen_image_name}', fontsize=7)
+
+    for i in range(1,6):
+        axarr[i].imshow(mpimg.imread(os.path.join(directory, df2.iloc[i]['Filename'])))
+        axarr[i].axis('off')
+        axarr[i].set_title(f'Image: {df2.iloc[i]["Filename"]} \nDistance: {df2.iloc[i]["Distance"]:.2f}', fontsize=7)
+
+    plt.savefig(os.path.join(save_tables_location, "compare_hist.png"), bbox_inches='tight', dpi=400)
 
     print('Done! Table created.')
 
