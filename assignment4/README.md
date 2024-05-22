@@ -1,4 +1,4 @@
-# Assignment 3: Detecting faces in historical newspapers
+# Assignment 4: Detecting faces in historical newspapers
 
 ###### Victor Rasmussen, Visual Analytics, Aarhus University 
 <br>
