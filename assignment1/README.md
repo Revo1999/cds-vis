@@ -64,11 +64,13 @@ The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and A
 
 ## Usage
 
+**<u> The program is written for Python v.3.12.3, other versions might not function or produce unexpected behaviour. </u>**
+
 1. Clone the repository
 
     ``` git clone  https://github.com/Revo1999/cds-vis.git```
 <br><br>
-2. Insert the data as so it matches the folder-structure provided in Project structure. The program is written for **Python v.3.12.3**, other versions might not function or produce unexpected behaviour.
+2. Insert the data as so it matches the folder-structure provided in Project structure.
 <br><br>
 
 3. Change directory into the assignment1 directory <br>
