@@ -32,7 +32,7 @@ Both programs produce a csv and plots to show the results.
 
 ## Content table
 
-1. [Introduction](#Assignment-1:-Simple-image-search-algorithm)
+1. [Introduction](#assignment-1-simple-image-search-algorithm)
 2. [Project Structure](#project-structure)
 3. [Data Source](#data-source)
 4. [Usage](#usage)
