@@ -104,7 +104,7 @@ Both programs are written to be able to accept other datasets. This mean you cou
 
 ## Outputs
 
-When comparing images of flowers using computers, the goal is the find similarities in the pictures which can be of use. In this case with the flowers dataset the goal of a good algoritm can be said to be finding similar flowers, or the same catagory of flowers.
+When comparing images of flowers using computers, the goal is the find similarities in the pictures which can be of use. In this case with the flowers dataset the goal of a good algorithm can be said to be finding similar flowers, or the same catagory of flowers.
 
 ### Compare Hist OpenCV
 
@@ -130,7 +130,7 @@ If the goal is to catagorize flowers, or find similar flowers compareHist does n
 ### Nearest Neighbor Sci-kit learn
 ![Description](out/nearest_neighbor.png?raw=true)
 
-Unlike ```compareHist()```, nearest neigbor uses the spatial information in the image files. Using VGG16 the model leverage deep learning techniques used in preprocessing of pictures, this type of feature extraction helps the models "understand" the images that they are presented. Nearest neighbor looks for cosine similarity between the pictures.
+Unlike ```compareHist()```, nearest neighbor uses the spatial information in the image files. Using VGG16 the model leverage deep learning techniques used in preprocessing of pictures, this type of feature extraction helps the models "understand" the images that they are presented. Nearest neighbor looks for cosine similarity between the pictures.
 
 In the results of it's clear it picks up the colour of the flowers better. This could be due to the spatial information of the pictures. As the colors typically is clustered.
 
