@@ -9,12 +9,6 @@
 2. [Project Structure](#project-structure)
 3. [Data Source](#data-source)
 4. [Usage](#usage)
-    1. [Cloning the Repository](#cloning-the-repository)
-    2. [Inserting Data](#inserting-data)
-    3. [Changing Directory](#changing-directory)
-    4. [Setting Up Virtual Environment](#setting-up-virtual-environment)
-    5. [Running the Programs](#running-the-programs)
-    6. [Custom Execution](#custom-execution)
 5. [Flags](#flags)
 6. [Compatibility & Other Uses](#compatibility--other-uses)
 7. [Outputs](#outputs)
@@ -110,7 +104,7 @@ The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and A
 <br>
 <br>
 
-## Flags for ```open_cv_compare_hist.py``` & ```nearest_neighbor.py```:
+## Flags:
 
 - `-I`, `--Image_name`: Name the image file you want to compare to the rest of the images (default: "image_0321.jpg").<br><br>
 
