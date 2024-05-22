@@ -64,13 +64,24 @@ The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and A
 
 ## Usage
 
-1. Insert the data as so it matches the folder-structure provided in Project structure. The program is written for **Python v.3.12.3**, other versions might not function or produce unexpected behaviour.
+1. Clone the repository
+
+    ``` git clone  https://github.com/Revo1999/cds-vis.git```
 <br><br>
-2. Change directory into the assignment1 directory
+2. Insert the data as so it matches the folder-structure provided in Project structure. The program is written for **Python v.3.12.3**, other versions might not function or produce unexpected behaviour.
 <br><br>
-3. run ```bash createVEnv.sh``` in console, will setup virtual environment containing the packages needed to run both programs.
+
+3. Change directory into the assignment1 directory <br>
+    ``` cd assignment1```
+    <br><br>
+
+4. Setup virtual environment containing the packages needed to run both programs. <br>
+```bash createVEnv.sh```
 <br><br>
-4. run ```bash run.sh``` in console will run ```open_cv_compare_hist.py``` &  ```nearest_neighbor.py``` by activating the virtual environment, and after the program has ran it will close the environment again. **For custom execution use** ```bash run_custom.sh``` it will prompt you to select which program to run here you can apply flags to the execution for example ```nearest_neighbor.py -I image_0001.jpg```. This does also automatically open and close the virtual environment.
+
+5. Run open_cv_compare_hist.py &  nearest_neighbor.py by activating the virtual environment, and after the program has ran it will close the environment again.<br>
+```bash run.sh``` <br><br>
+**For custom execution use** ```bash run_custom.sh``` it will prompt you to select which program to run here you can apply flags to the execution this does also automatically open and close the virtual environment: <br> ```bash run_custom```  then write for example: ```nearest_neighbor.py -I image_0001.jpg```.
 
 <br>
 <br>
@@ -93,7 +104,7 @@ Both programs are written to be able to accept other datasets. This mean you cou
 
 When comparing images of flowers using computers, the goal is the find similarities in the pictures which can be of use. In this case with the flowers dataset the goal of a good algoritm can be said to be finding similar flowers, or the same catagory of flowers.
 
-#### Compare Hist OpenCV
+### Compare Hist OpenCV
 
 ![Description](out/compare_hist.png?raw=true)
 
@@ -114,14 +125,14 @@ If the goal is to catagorize flowers, or find similar flowers compareHist does n
 
 
 
-#### Nearest Neighbor Sci-kit learn
+### Nearest Neighbor Sci-kit learn
 ![Description](out/nearest_neighbor.png?raw=true)
 
 Unlike ```compareHist()```, nearest neigbor uses the spatial information in the image files. Using VGG16 the model leverage deep learning techniques used in preprocessing of pictures, this type of feature extraction helps the models "understand" the images that they are presented. Nearest neighbor looks for cosine similarity between the pictures.
 
-In the results of it's clear it picks up the colour of the flowers better. This could be due to the spatial information of the pictures which is picked up. 
+In the results of it's clear it picks up the colour of the flowers better. This could be due to the spatial information of the pictures. As the colors typically is clustered.
 
-If the goal is to categorize flowers it's performing better. As mentioned earlier the dataset is comprised of 80 images per category, this means the images chosen is from a category ranging from 320 to 400. This also means the 5 images with the lowest distance all fit this category.
+If the goal is to categorize flowers it's performing really well in this example. As mentioned earlier the dataset is comprised of 80 images per category, this means the image chosen (image 321) is from a category ranging from 320 to 400. This also means the 5 images with the lowest distance all fit this category.
 
 ##### Nearest Neighbor Sci-kit learn CSV [Access here!](https://github.com/Revo1999/cds-vis/blob/main/assignment1/out/nearest_neighbor_image_0321.jpg_results.csv)
 
@@ -135,3 +146,9 @@ If the goal is to categorize flowers it's performing better. As mentioned earlie
 |image_0343.jpg|0.157 |
 
 ## Limitations & possible improvements
+
+OpenCV's comparehist has some clear limitations. In terms of catagorizing flowers. VGG16 + Nearest Neighbor performes significantly better. VGG16 does however take significantly more computing power, than compareHist. That said VGG16 is known to be small in size for the type of model that it is. <br> Possible improvements could be tweaking different settings. Nearest Neighbor can look for similarities with different options, this project uses cosine, but testing might reveal other options that yield better results. 
+
+Both programs could improve in compability, and also have error-handling, as of right now both programs would crash with damaged images. Also the programs could include more options towards filetype's of pictures. Both programs only accept JPG, other datasets could have other formats, which the programs cant handle.
+
+As of rightnow the plots are pretty much hardcoded, so if you wanted to have the ten closest it would mess up the plots, this is why there isn't created a option for this. This could be improved upon.
