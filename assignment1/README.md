@@ -3,6 +3,28 @@
 ###### Victor Rasmussen, Visual Analytics, Aarhus University 
 <br>
 
+## Content table
+
+1. [Introduction](#introduction)
+2. [Project Structure](#project-structure)
+3. [Data Source](#data-source)
+4. [Usage](#usage)
+    1. [Cloning the Repository](#cloning-the-repository)
+    2. [Inserting Data](#inserting-data)
+    3. [Changing Directory](#changing-directory)
+    4. [Setting Up Virtual Environment](#setting-up-virtual-environment)
+    5. [Running the Programs](#running-the-programs)
+    6. [Custom Execution](#custom-execution)
+5. [Flags](#flags)
+6. [Compatibility & Other Uses](#compatibility--other-uses)
+7. [Outputs](#outputs)
+    1. [Compare Hist OpenCV](#compare-hist-opencv)
+    2. [Nearest Neighbor Sci-kit Learn](#nearest-neighbor-sci-kit-learn)
+8. [Limitations & Possible Improvements](#limitations--possible-improvements)
+
+<br><br>
+
+
 This assignment is part of a course at Aarhus University called Visual Analytics. Access the Assignment instructions on this [Github page](https://github.com/CDS-AU-DK/cds-visual/tree/main/assignments/assignment1) 
 
 In this assignment we were asked to use Open-CV to design a simple search algorithm.
