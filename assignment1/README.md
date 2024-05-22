@@ -1,23 +1,7 @@
-# Assignment 1 - Simple image search algorithm
+# Assignment 1: Simple image search algorithm
 
 ###### Victor Rasmussen, Visual Analytics, Aarhus University 
 <br>
-
-## Content table
-
-1. [Introduction](#introduction)
-2. [Project Structure](#project-structure)
-3. [Data Source](#data-source)
-4. [Usage](#usage)
-5. [Flags](#flags)
-6. [Compatibility & Other Uses](#compatibility--other-uses)
-7. [Outputs](#outputs)
-    1. [Compare Hist OpenCV](#compare-hist-opencv)
-    2. [Nearest Neighbor Sci-kit Learn](#nearest-neighbor-sci-kit-learn)
-8. [Limitations & Possible Improvements](#limitations--possible-improvements)
-
-<br><br>
-
 
 This assignment is part of a course at Aarhus University called Visual Analytics. Access the Assignment instructions on this [Github page](https://github.com/CDS-AU-DK/cds-visual/tree/main/assignments/assignment1) 
 
@@ -45,6 +29,21 @@ This project includes two projects ```open_cv_compare.py``` and ```nearest_neigh
 ```nearest_neighbor.py``` is a python program which loads images using the pre-trained VGG16 model, then it calculates distances from the VGG16's vectors using sci-kit learns nearest neighbor model.
 
 Both programs produce a csv and plots to show the results.
+
+## Content table
+
+1. [Introduction](#Assignment-1:-Simple-image-search-algorithm)
+2. [Project Structure](#project-structure)
+3. [Data Source](#data-source)
+4. [Usage](#usage)
+5. [Flags](#flags)
+6. [Compatibility & Other Uses](#compatibility--other-uses)
+7. [Outputs](#outputs)
+    1. [Compare Hist OpenCV](#compare-hist-opencv)
+    2. [Nearest Neighbor Sci-kit Learn](#nearest-neighbor-sci-kit-learn)
+8. [Limitations & Possible Improvements](#limitations--possible-improvements)
+
+<br><br>
 
 
 
