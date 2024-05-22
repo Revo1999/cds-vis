@@ -1,3 +1,10 @@
+'''
+Assignment 3
+    Victor Rasmussen
+        Visual Analytics, Aarhus University
+            17-05-2024
+'''
+
 import os
 import vrashelper as vh # A small package containing a work_here and console text definitions i use often
 import glob

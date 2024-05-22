@@ -18,6 +18,8 @@ import re
 import altair as alt
 import vegafusion as vf
 
+'''from random import choice''' # Used for testing
+
 
 
 def list_files(directory):
@@ -226,12 +228,12 @@ def data_conversion(data, method):
     dataset_list = []
 
     for dataset in seperate_newspaper(data=data): # Seperates datasets into newspaper
-        converted_dataset = method(dataset) # applies faces_per_page_table function to all datasets
+        converted_dataset = method(dataset) # applies method function to all datasets
         dataset_list.append(converted_dataset)
     
-    joined_data = pl.concat(dataset_list) #joins data back together
+    joined_data = pl.concat(dataset_list) #joins data back together for a connected model
 
-    return joined_data
+    return joined_data, dataset_list
 
 def visualize_line_chart(data, y_value, y_title):
 
@@ -277,33 +279,42 @@ def main():
 
     files_to_proces = check_files(file_list=list_files(directory_path), wanted_filetype=".jpg")
 
+    '''files_to_proces = [choice(files_to_proces) for _ in range(20)]''' # Used for testing
+
     images = image_loader(files_to_proces)
 
     mtcnn = MTCNN(keep_all=True)
 
     results = image_processing(images=images, model=mtcnn, file_list=files_to_proces)
 
-    dataframe = pl.from_dict(results)
+    data = pl.from_dict(results)
 
-    dataframe.write_csv("../out/results.csv")
+    faces_per_page_data, faces_list = (data_conversion(data=data, method=faces_per_page_table))
 
-    filepath = "../out/results.csv"
-    
-    data = pl.read_csv(filepath)
-
-    faces_per_page_data = (data_conversion(data=data, method=faces_per_page_table))
-
-    pages_with_face_data = (data_conversion(data=data, method=pages_with_faces_table))
+    pages_with_face_data, pages_list = (data_conversion(data=data, method=pages_with_faces_table))
 
     faces_per_page_data.write_csv("../out/faces_per_page.csv")
 
     pages_with_face_data.write_csv("../out/pages_with_faces.csv")
 
+    print(faces_list) # These list contains the datasets
+    print(pages_list) # These list contains the datasets
+
     vf.enable()
 
-    visualize_line_chart(data=faces_per_page_data, y_value="faces_per_page", y_title="faces per page").save("../out/LineChart.png")
+    visualize_line_chart(data=faces_per_page_data, y_value="faces_per_page", y_title="faces per page").save("../out/faces_per_page_all.png")
 
-    visualize_line_chart(data=pages_with_face_data, y_value="percent_of_pages_with_face", y_title="Percent of pages with face").save("../out/LineChart1.png")
+    visualize_line_chart(data=pages_with_face_data, y_value="percent_of_pages_with_face", y_title="Percent of pages with face").save("../out/percent_of_pages_with_face_all.png")
 
+    for i in range(0, len(faces_list)):
+        newspaper_name = (faces_list[i]['newspaper'].unique()).to_list()[0]
+
+        os.mkdir(os.path.join("..","out", newspaper_name))
+
+        visualize_line_chart(data=faces_list[i], y_value="faces_per_page", y_title="faces per page").save(f"../out/{newspaper_name}/faces_per_page.png")
+        visualize_line_chart(data=pages_list[i], y_value="percent_of_pages_with_face", y_title="Percent of pages with face").save(f"../out/{newspaper_name}/percent_of_pages_with_face.png")
+        faces_list[i].write_csv(f"../out/{newspaper_name}/faces_per_page.csv")
+        pages_list[i].write_csv(f"../out/{newspaper_name}/percent_of_pages_with_face.csv")
+        
 if __name__ == "__main__":
     main()

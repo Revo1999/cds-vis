@@ -31,6 +31,7 @@ def get_image_info(folder_path):
                         heights.append(height)
                 except Exception as e: # To handle the images with missing bytes
                     print(f"Error processing {file_name}: {e}")
+                    
             # gives the loading bar a tick
             pbar.update(1)
 
