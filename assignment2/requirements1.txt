@@ -1,1 +1,0 @@
-pip install tqdm numpy scikit-learn tensorflow opencv-python-headless==4.9.0.80 matplotlib

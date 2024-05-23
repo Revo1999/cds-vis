@@ -101,7 +101,7 @@ Keras API documentation can be found [here!](https://keras.io/api/datasets/cifar
     You can also install them globally in your environment use ```pip install -r requirements.txt``` while in assignment2 folder
 <br><br>
 
-4. Runs **lr.py** & **mlp.py** by activating the virtual environment, executing programs and closing the environment again.<br>
+4. Runs **lr.py** & **mlp.py** by activating the virtual environment, changing directory into src executing programs changing back and closing the environment again.<br>
     ``` sh
     bash run.sh
     ``` 
@@ -171,10 +171,10 @@ Plotting the loss curve for the MLP model shows a steady decline in loss. The pr
 | macro avg   |    0.26   |   0.27   |   0.26   |  10000|
 |weighted avg    |   0.26    |  0.27  |    0.26   |  10000|
 
-Sci-kit learns Logistic regression model does not perform well having an F1-score(a metric taking precision and recall into acount) of 0.26, this also applies to the precision. Logistical Regression is trying to handle images in a linear manner. Images on the other hand appear not linear, therefore it might be hard for the model to understand the relationship between pixels in the image. Like the MLP-model ship, airplane seem to perform well, i attribute the same reason, as explained earlier to why this is happening.
+Sci-kit learns Logistic regression model does not perform well having an F1-score (a metric taking precision and recall into acount) of 0.26, this also applies to the precision. Logistical Regression is trying to handle images in a linear manner. Images on the other hand appear not linear, therefore it might be hard for the model to understand the relationship between pixels in the image. Like the MLP-model ship, airplane seem to perform well, i attribute the same reason, as explained earlier to why this is happening.
 
 ## Limitations & possible improvements
 
 The clear limitations of the programs are the models used. Both MLP and Logistic Regression have difficulties handling the complex nature of images. Convolutional neural networks such as VGG16 are better suited for image processing. Also both MLP and Logistic Regression models are models which are not finely tuned for the task of analyzing images, here again VGG16 would be a better option.
 
-Better preprocessing practices might improve performance quite a bit (for example slightly rotating images), and create a more robust models.
+Better preprocessing practices might improve performance a bit (for example slightly rotating images), and create a more robust models.

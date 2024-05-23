@@ -4,8 +4,10 @@
 source assignment2_venv/bin/activate
 
 # run the code
-python src/lr.py
-python src/mlp.py
+cd src
+python lr.py
+python mlp.py
+cd ..
 
 # close the environment
 deactivate
