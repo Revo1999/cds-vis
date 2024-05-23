@@ -31,16 +31,14 @@ In this assignment we were asked to use Open-CV to design a simple search algori
 
 ## Content table
 
-1. [Introduction](#assignment-1-simple-image-search-algorithm)
+1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Data Source](#data-source)
 4. [Usage](#usage)
-5. [Flags](#flags)
-6. [Compatibility & Other Uses](#compatibility--other-uses)
-7. [Outputs](#outputs)
-    1. [Compare Hist OpenCV](#compare-hist-opencv)
-    2. [Nearest Neighbor Sci-kit Learn](#nearest-neighbor-sci-kit-learn)
-8. [Limitations & Possible Improvements](#limitations--possible-improvements)
+5. [Compatibility & Other Uses](#compatibility--other-uses)
+6. [Outputs](#outputs)
+    1. [Graph Analysis](#graph-analysis)
+7. [Limitations & Possible Improvements](#limitations--possible-improvements)
 
 <br><br>
 
@@ -134,7 +132,6 @@ This assignment works with a corpus of historic Swiss newspapers: the Journal de
 <br>
 
 ## Compatibility & other uses
-
 The program is written so it also can be used on other datasets, as long as they are **.jpg**.
 
 You would have to modify these two functions to match the structure of your other data both functions use relative paths.
@@ -159,14 +156,43 @@ def extract_decade(filename):
 ```
 ## Outputs
 
-![Description](out/percent_of_pages_with_face_all.png?raw=true)
+- GDL (Gazette de Lausanne) in <span style="color:blue">blue</span>
+- JDG (Journal de Genève) in <span style="color:red">red</span>
+- IMP (L'Impartial) in <span style="color:orange">orange</span>
+
+<br>
+
+Going in to the results i suspected that MTCNN might perform better on newer images, due to the evolution of technology, mainly printing techniques(easier for the algorithm to detect the faces) and cameras(easier to take pictures and place them in newspaper). The MTCNN is trained on [CASIA-WEBFACE](https://paperswithcode.com/paper/learning-face-representation-from-scratch). Which is 494,414 face images of 10,575 real identities collected from the web. I suspect these images are newer (in relation to our earliest data points are pre 1800's). <br><br>
 
 ![Description](out/faces_per_page_all.png?raw=true)
+
+Looking into the first graph its clear that the amount of faces explodes for IMP(L'Impartial) around the 1990's, was a daily newspaper similar to Daily express covering politics. GDL and JDG also have a small increase but not in relation to IMP.
+
+Generally all the newspaper rise steadily from the first data points unward the last. This could be as earlier mentioned both be because of camera technology evovling, but also printing quality getting better, thereby making it easier for MTCNN to detect faces.
+
+
+![Description](out/percent_of_pages_with_face_all.png?raw=true)
+
+As well as the faces per page graph, percent of pages with faces also increase from 1840 and onwards. IMP also rise a little more aggressive with percent of pages with face since the first data points. This could indicate editorial policies pushing towards more content with images containing faces. In this period from 1880 GDL and JDG also increase, thus having lower numbers.
+
+GDL data points from 1840 is at the graph hitting zero, this is due to not having any datapoints for this period at all. 
+
+Generally it's hard to attribute the evolution in graphs to specific technology og journalistic practices, it might be a combination, though it's evident that mtcnn face detection finds more faces per page, on more percent of the scanned images have faces generally trending towards a rise for all newspapers from 1880 onward.
 
 ## Limitations & possible improvements
 
 ### To Batch or not to Batch?
 
-The code is fairly ressource intensive. While the code is written so it doesn't utilize batch processing, as to batch process its required for the images to have the same dimensions(if you try it will tell you so in the console). To explore the idea a bit more, there is 4624 images, hence an overlap in image dimensions could be present. I've looked at the images, and organized them by image size (in polars). In the table (dimensionchart.csv.csv), it shows has 354 entries meaning you would have to have 354 different batches. This is without any modification of the images, this might improve performance, given that batch-processing often is faster than individual processing when using models.
+The code is fairly ressource intensive. While the code is written so it doesn't utilize batch processing, while mtcnn batch processing requires the images to have the same dimensions (if you try it will tell you so in the console). To explore the idea a bit more, there is 4624 images, hence an overlap in image dimensions could be present. I've looked at the images, and organized them by image size [Analyzer.py](https://github.com/Revo1999/cds-vis/blob/main/assignment4/analysis/analyzer.py). In the table [dimensionchart.csv](https://github.com/Revo1999/cds-vis/blob/main/assignment4/analysis/dimensionchart.csv), it shows has 354 entries meaning you would have to have 354 different batches. This is without any modification of the images, this might improve performance, given that batch-processing often is faster than individual processing when using models.
 
-I've abandoned the idea, due to the dataset having a picture, with missing bites, an issue Pillow's ```img.verify() ``` can't detect. This would then make a whole batch unprocessable, and will first tell you when it gives an error, again leading to loss in efficiency, because the code needs to be rerun. While other dataset with uniform picture width and heights, might benefit from using batch processing, defect images cause it trouble. The code is therefore written to accommodate damaged files, and different image sizes.
+I've abandoned the idea, due to the dataset having a couple of pictures, with missing bites, an issue Pillow's ```img.verify() ``` can't detect. This would then make a whole batch unprocessable, and will first tell you when it gives an error, again leading to loss in efficiency, because the code needs to be rerun. In the current state if an individual image cant be processed by mtcnn it will continue without it (it's in a try/except statement).
+While other dataset with uniform picture width and heights, might benefit from using batch processing, defect images cause it trouble. The code is therefore written to accommodate damaged files, and different image sizes.
+
+### Face-detection
+
+MTCNN face detection does not detect all faces, sifting through some of the results in earlier stages of programming this program, i noticed a couple of pages with faces that did'nt got recognized. I do not have any exact amount of how many faces it missed, but it missed a few of the around 50 images i looked at.
+
+### Preprocessing
+
+Preprocessing might improve upon performance, setting up more lightweight algorithms to access pictures before mtcnn process them, or cutting down image resolutions can produce very similar results, for less computing power.
+
