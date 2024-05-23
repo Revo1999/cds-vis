@@ -177,7 +177,7 @@ As well as the faces per page graph, percent of pages with faces also increase f
 
 GDL data points from 1840 is at the graph hitting zero, this is due to not having any datapoints for this period at all. 
 
-Generally it's hard to attribute the evolution in graphs to specific technology og journalistic practices, it might be a combination, though it's evident that mtcnn face detection finds more faces per page, on more percent of the scanned images have faces generally trending towards a rise for all newspapers from 1880 onward.
+Generally it's hard to attribute the evolution in graphs to specific technology og journalistic practices, it might be a combination, though it's evident that mtcnn face detection finds more faces per page, on more percent of the scanned images have faces generally trending towards a rise for all newspapers from 1880 onward. Especially IMP explodes which i attribute mainly to journalistic practices for this newspaper. As the other two newspaper have the same conditions technologically.
 
 ## Limitations & possible improvements
 
