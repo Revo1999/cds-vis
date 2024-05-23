@@ -6,4 +6,4 @@ torch==2.2.0
 tqdm==4.66.4
 vegafusion==1.6.9
 git+https://github.com/Revo1999/vrashelper
-vl-convert-python
+vl-convert-python==1.4.0

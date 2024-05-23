@@ -4,8 +4,10 @@
 source assignment1_venv/bin/activate
 
 # run the code
-python src/nearest_neighbor.py
-python src/open_cv_compare_hist.py
+cd src
+python nearest_neighbor.py
+python open_cv_compare_hist.py
+cd ..
 
 # close the environment
 deactivate
