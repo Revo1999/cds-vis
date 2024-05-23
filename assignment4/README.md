@@ -162,7 +162,7 @@ def extract_decade(filename):
 
 <br>
 
-Going in to the results i suspected that MTCNN might perform better on newer images, due to the evolution of technology, mainly printing techniques(easier for the algorithm to detect the faces) and cameras(easier to take pictures and place them in newspaper). The MTCNN is trained on [CASIA-WEBFACE](https://paperswithcode.com/paper/learning-face-representation-from-scratch). Which is 494,414 face images of 10,575 real identities collected from the web. I suspect these images are newer (in relation to our earliest data points are pre 1800's). <br><br>
+Going in to the results i suspected that MTCNN might perform better on newer images, due to the evolution of technology, mainly printing techniques(easier for the algorithm to detect the faces) and cameras(easier to take pictures and place them in newspaper). The MTCNN is trained on [CASIA-WEBFACE](https://paperswithcode.com/paper/learning-face-representation-from-scratch). Which is 494,414 face images of 10,575 real identities collected from the web. I suspect these images are newer (in relation to our earliest data points are pre 1800's, which is long prior to the existance of "the web" ). <br><br>
 
 ![Description](out/faces_per_page_all.png?raw=true)
 
