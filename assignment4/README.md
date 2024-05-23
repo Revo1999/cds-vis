@@ -5,8 +5,6 @@
 
 This assignment is part of a course at Aarhus University called Visual Analytics. Access the Assignment instructions on this [Github page](https://github.com/CDS-AU-DK/cds-visual/tree/main/assignments/assignment4) 
 
-In this assignment we are asked to use Open-CV to design a simple search algorithm.
-
 > **This is from the Assignment instructions linked above:** <br>
 >
 > You should write code which does the following:
