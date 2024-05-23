@@ -122,7 +122,7 @@ def apply_neighbor(filenames, target_image):
 
 def get_filenames():
     # path to folder with images
-    root_dir = os.path.join("..", "data")
+    root_dir = os.path.join("..", "in")
 
     filenames = [root_dir + "/" + name for name in sorted(os.listdir(root_dir)) if name.endswith(".jpg")]
 
@@ -130,7 +130,7 @@ def get_filenames():
 
 
 def main():
-    target_image = os.path.join("..", "data", argument_collection().Image_name)
+    target_image = os.path.join("..", "in", argument_collection().Image_name)
 
     filenames = get_filenames()
 

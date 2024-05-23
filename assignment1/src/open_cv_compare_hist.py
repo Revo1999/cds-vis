@@ -85,7 +85,7 @@ def argument_collection():
 
 def main():
     directory = os.path.join('..',
-                                'data',)
+                                'in',)
 
     data = os.listdir(directory)
 

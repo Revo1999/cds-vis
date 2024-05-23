@@ -83,22 +83,37 @@ The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and A
 
 1. Clone the repository
 
-    ``` git clone  https://github.com/Revo1999/cds-vis.git```
+    ``` sh
+    git clone  https://github.com/Revo1999/cds-vis.git
+    ```
 <br><br>
+
 2. Insert the data as so it matches the folder-structure provided in Project structure.
+
 <br><br>
 
 3. Change directory into the assignment1 directory <br>
-    ``` cd assignment1```
+    ``` sh
+    cd assignment1
+    ```
     <br><br>
 
 4. Setup virtual environment containing the packages needed to run both programs. <br>
-```bash createVEnv.sh```
+    ``` sh
+    bash createVEnv.sh
+    ```
 <br><br>
 
 5. Run open_cv_compare_hist.py &  nearest_neighbor.py by activating the virtual environment, and after the program has ran it will close the environment again.<br>
-```bash run.sh``` <br><br>
-**For custom execution use** ```bash run_custom.sh``` it will prompt you to select which program to run here you can apply flags to the execution this does also automatically open and close the virtual environment: <br> ```bash run_custom```  then write for example: ```nearest_neighbor.py -I image_0001.jpg```.
+    ``` sh
+    bash run.sh
+    ```
+ <br><br>
+**For custom execution use** 
+``` sh
+bash run_custom.sh
+```
+ it will prompt you to select which program to run here you can apply flags to the execution this does also automatically open and close the virtual environment: <br> ```bash run_custom```  then write for example: ```nearest_neighbor.py -I image_0001.jpg```.
 
 <br>
 <br>
@@ -127,7 +142,7 @@ When comparing images of flowers using computers, the goal is the find similarit
 
 ```compareHist()``` computes the images and calculates how similar the colors are across the whole picture. To the eye the picture i've chosen purple is dominant as the colour of the flower, and you would think it would result in similar images also with purple flowers. compareHist does not take spatial information into count, and I imagine that the different colours is the result of comparehist having RGB channels. So Purple is constructed mostly of red and blue therefore red and blue flowers would overlap in the "r" & "b" values. ```compareHist()``` does not take spatial information into acount this also leads to a significant loss of data.
 
-If the goal is to catagorize flowers, or find similar flowers compareHist does not succeed.
+If the goal is to categorize flowers, or find similar flowers compareHist does not succeed.
 
 
 ##### Compare Hist OpenCV CSV [Access here!](https://github.com/Revo1999/cds-vis/blob/main/assignment1/out/compare_hist_image_0321.jpg_results.csv)
