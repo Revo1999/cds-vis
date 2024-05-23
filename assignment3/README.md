@@ -3,9 +3,7 @@
 ###### Victor Rasmussen, Visual Analytics, Aarhus University 
 <br>
 
-This assignment is part of a course at Aarhus University called Visual Analytics. Access the Assignment instructions on this [Github page](https://github.com/CDS-AU-DK/cds-visual/tree/main/assignments/assignment1) 
-
-In this assignment we were asked to use Open-CV to design a simple search algorithm.
+This assignment is part of a course at Aarhus University called Visual Analytics. Access the Assignment instructions on this [Github page](https://github.com/CDS-AU-DK/cds-visual/tree/main/assignments/assignment3) 
 
 > **This is from the Assignment instructions linked above:** <br>
 >For this exercise, you should write some code which does the following:
@@ -16,22 +14,19 @@ In this assignment we were asked to use Open-CV to design a simple search algori
 > - Present a classification report and learning curves for the trained classifier <br> <br>
 > - Your repository should also include a short description of what the classification report and learning curve show. <br> <br>
 
-```open_cv_compare.py``` is a python program which loads images from the in folder, creates histograms, which it then compares to find the 5 closest to the target image. Using OpenCV's ```compareHist()``` function.
+```document_classifier.py``` is a python program which loads images from Tobacco-dataset into a VGG16 model for image classification. It preprocess and prepares the dataset, trains the model. The program creates classification reports and plots which can be used to analysis.
 
-Both programs produce a csv and plots to show the results.
+## Table of Contents
 
-## Content table
+## Table of Contents
 
-1. [Introduction](#assignment-1-simple-image-search-algorithm)
+1. [Introduction](#assignment-3-document-classification-using-pretrained-image-embeddings)
 2. [Project Structure](#project-structure)
 3. [Data Source](#data-source)
 4. [Usage](#usage)
-5. [Flags](#flags)
-6. [Compatibility & Other Uses](#compatibility--other-uses)
-7. [Outputs](#outputs)
-    1. [Compare Hist OpenCV](#compare-hist-opencv)
-    2. [Nearest Neighbor Sci-kit Learn](#nearest-neighbor-sci-kit-learn)
-8. [Limitations & Possible Improvements](#limitations--possible-improvements)
+5. [Compatibility & Other Uses](#compatibility--other-uses)
+6. [Outputs](#outputs)
+7. [Limitations & Possible Improvements](#limitations--possible-improvements)
 
 <br><br>
 
@@ -40,30 +35,33 @@ Both programs produce a csv and plots to show the results.
 ## Project Structure
 
 ```
-assignment1/
-├── in/
-│   ├── image_0001.jpg
-│   ├── image_0002.jpg
-│   └── image_0003.jpg
-├── out/
-│   ├── compare_hist_image_0321.jpg_results.csv
-│   ├── compare_hist.png
-│   ├── nearest_neighbor_image_0321.jpg_results.csv
-│   └── nearest_neighbor.png
-├── src/
-│   ├── nearest_neighbor.py
-│   └── open_cv_compare_hist.py     
+assignment3/
+└── in/
+    └── Tobacco3482/
+        ├── ADVE
+        ├── Email
+        ├── Form
+        ├── ...
+        └── ...
+model/
+└── tobacoo_model.h5
+out/
+├── Loss_Acc_Curves.png
+└── tobacco_report.txt
+src/
+├── document_classifier.py
 ├── createVEnv.sh
+├── image.png
 ├── README.md
 ├── requirements.txt
-├── run_custom.sh
 └── run.sh
 
 ```
 
 ## Data source
 
-The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and Andrew Zisserman. It can be accessed [here!](https://www.robots.ox.ac.uk/~vgg/data/flowers/17/) (Beware of terms of usage!) The dataset contains 17 categories of flowers with 80 images of each.
+The Tobacco-3482 dataset consists of images belonging to 10 different classes including Letter, Memo, Email etc. The dataset has a total of 3482 images. All images are from Tobacco industry hence the name.
+ It can be accessed [here!](https://www.kaggle.com/datasets/patrickaudriaz/tobacco3482jpg?resource=download)
 
 <br>
 
@@ -73,89 +71,86 @@ The dataset used is the 17 Category Flower Dataset by Maria-Elena Nilsback and A
 
 1. Clone the repository
 
-    ``` git clone  https://github.com/Revo1999/cds-vis.git```
-<br><br>
+    ``` sh
+    git clone  https://github.com/Revo1999/cds-vis.git
+    ```
+<br>
+
 2. Insert the data as so it matches the folder-structure provided in Project structure.
 <br><br>
 
-3. Change directory into the assignment1 directory <br>
-    ``` cd assignment1```
-    <br><br>
+3. Change directory into the assignment3 directory <br>
+    ``` sh
+    cd assignment3
+    ```
+    <br>
 
 4. Setup virtual environment containing the packages needed to run both programs. <br>
-```bash createVEnv.sh```
-<br><br>
-
-5. Run open_cv_compare_hist.py &  nearest_neighbor.py by activating the virtual environment, and after the program has ran it will close the environment again.<br>
-```bash run.sh``` <br><br>
-**For custom execution use** ```bash run_custom.sh``` it will prompt you to select which program to run here you can apply flags to the execution this does also automatically open and close the virtual environment: <br> ```bash run_custom```  then write for example: ```nearest_neighbor.py -I image_0001.jpg```.
-
-<br>
+    ``` sh
+    bash createVEnv.sh
+    ```
 <br>
 
-## Flags:
-
-- `-I`, `--Image_name`: Name the image file you want to compare to the rest of the images (default: "image_0321.jpg").<br><br>
-
-    >Example: ```python nearest_neighbor.py -I image_0001.jpg``` <br>
-    >Example: ```python open_cv_compare_hist.py -I image_0002.jpg```
-
+5. Run ```document_classifier.py``` by activating the virtual environment, changing directory into src and after the program has ran it will change directory back and it will close the environment again.<br>
+    ```sh
+    bash run.sh
+    ``` 
 <br>
+
+6. It will prompt you to check if the files it removes are correct.
+
+    ![](image.png?raw=true)
+    ```
+    Type "y" in the console
+    ```
 <br>
 
 ## Compatibility & other uses
 
-Both programs are written to be able to accept other datasets. This mean you could use other datasets, be aware the code is written to accept images of **".jpg"**. The dataset must be placed directly into the data folder (as shown in project structure). If your dataset contains other filetypes, you dont have to manually remove them, the program simply disregard these.
+This program is not written specifically for the tobacco-dataset. If you have another dataset in **".jpg"**-format with images categorized in folder it will work with one change. The directory would have to be changed. Which can be edited in line 170 in the  ```document_classifier.py```:
+
+``` py
+directory = ["..", "in", "Tobacco3482"]
+```
 
 ## Outputs
 
-When comparing images of flowers using computers, the goal is the find similarities in the pictures which can be of use. In this case with the flowers dataset the goal of a good algorithm can be said to be finding similar flowers, or the same catagory of flowers.
+![Hello](out/Loss_Acc_Curves.png?raw=true)
 
-### Compare Hist OpenCV
+It seems like the model is overfitting as the accuracy on the training data, is quite a bit higher than, than the validation data. This indicate that the model have room for improvement in terms of the training. 
 
-![Description](out/compare_hist.png?raw=true)
+The loss curve is interpreted as the difference between the train_loss and validation_loss is initially the difference in performance between training and validation, this means any difference shown is a sign of overfitting, baring in mind that small differences is expected as the data the model is presented is different.
 
-```compareHist()``` computes the images and calculates how similar the colors are across the whole picture. To the eye the picture i've chosen purple is dominant as the colour of the flower, and you would think it would result in similar images also with purple flowers. compareHist does not take spatial information into count, and I imagine that the different colours is the result of comparehist having RGB channels. So Purple is constructed mostly of red and blue therefore red and blue flowers would overlap in the "r" & "b" values. ```compareHist()``` does not take spatial information into acount this also leads to a significant loss of data.
+```
+              precision    recall  f1-score   support
 
-If the goal is to catagorize flowers, or find similar flowers compareHist does not succeed.
+        News       0.86      0.84      0.85        43
+        ADVE       0.86      0.81      0.83       126
+        Memo       0.80      0.38      0.51        96
+      Letter       0.42      0.83      0.55       106
+       Email       0.58      0.44      0.50       117
+      Resume       0.73      0.75      0.74        40
+        Form       0.61      0.62      0.62        40
+  Scientific       0.42      0.46      0.44        54
+      Report       0.50      0.14      0.22        21
+        Note       0.34      0.28      0.31        54
 
-
-##### Compare Hist OpenCV CSV [Access here!](https://github.com/Revo1999/cds-vis/blob/main/assignment1/out/compare_hist_image_0321.jpg_results.csv)
-|Filename|Distance      |
-|--------|--------------|
-|image_0321.jpg|0.0     |
-|image_0189.jpg|1510.8  |
-|image_0043.jpg|1558.3  |
-|image_0525.jpg|1564.5  |
-|image_1249.jpg|1567.0  |
-|image_1096.jpg|1579.1  |
-
-
-
-### Nearest Neighbor Sci-kit learn
-![Description](out/nearest_neighbor.png?raw=true)
-
-Unlike ```compareHist()```, nearest neighbor uses the spatial information in the image files. Using VGG16 the model leverage deep learning techniques used in preprocessing of pictures, this type of feature extraction helps the models "understand" the images that they are presented. Nearest neighbor looks for cosine similarity between the pictures.
-
-In the results of it's clear it picks up the colour of the flowers better. This could be due to the spatial information of the pictures. As the colors typically is clustered.
-
-If the goal is to categorize flowers it's performing really well in this example. As mentioned earlier the dataset is comprised of 80 images per category, this means the image chosen (image 321) is from a category ranging from 320 to 400. This also means the 5 images with the lowest distance all fit this category.
-
-##### Nearest Neighbor Sci-kit learn CSV [Access here!](https://github.com/Revo1999/cds-vis/blob/main/assignment1/out/nearest_neighbor_image_0321.jpg_results.csv)
-
-|Filename|Distance    |
-|--------|------------|
-|image_0321.jpg|0.0   |
-|image_0351.jpg|0.079 |
-|image_0371.jpg|0.108 |
-|image_0333.jpg|0.141 |
-|image_0328.jpg|0.157 |
-|image_0343.jpg|0.157 |
+    accuracy                           0.59       697
+   macro avg       0.61      0.55      0.56       697
+weighted avg       0.63      0.59      0.58       697
+```
+ The classification report shows that the model's overall accuracy is 0.59, which is relatively low for a classification task, 0.7 or higher is typically considered more reasonable News and ADVE have reasonably good precision and recall. "Memo" have good precision but horrible recall, meaning when it guess memo it's correct 80% of the time, but it is only finding 38% procent of them.
+ 
+The model struggles with classifying "Note" and "Letter". Notes can vary a lot in how they can look since notes generally have less stylistic rules than other categories. Letters may also vary quite a bit in style. Which can explain the low numbers.
 
 ## Limitations & possible improvements
 
-OpenCV's comparehist has some clear limitations. In terms of catagorizing flowers. VGG16 + Nearest Neighbor performes significantly better. VGG16 does however take significantly more computing power, than compareHist. That said VGG16 is known to be small in size for the type of model that it is. <br> Possible improvements could be tweaking different settings. Nearest Neighbor can look for similarities with different options, this project uses cosine, but testing might reveal other options that yield better results. 
+### Overfitting problem
 
-Both programs could improve in compability, and also have error-handling, as of right now both programs would crash with damaged images. Also the programs could include more options towards filetype's of pictures. Both programs only accept JPG, other datasets could have other formats, which the programs cant handle.
+To improve the overfitting situation quite a few things can be done. I've tried to list some ideas, none of these have been tried:
 
-As of rightnow the plots are pretty much hardcoded, so if you wanted to have the ten closest it would mess up the plots, this is why there isn't created a option for this. This could be improved upon.
+- Artificially make the dataset larger using data-augmentation
+- Using different parameters:
+    - early stopping
+    - L1 or L2 regulization (more information about: [implementation](https://www.tensorflow.org/api_docs/python/tf/keras/regularizers/L1L2) & [theory](https://medium.com/@fernando.dijkinga/explaining-l1-and-l2-regularization-in-machine-learning-2356ee91c8e3))
+- Collect more data (this is difficult and not very viable)

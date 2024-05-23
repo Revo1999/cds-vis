@@ -1,7 +1,7 @@
-pillow
-tensorflow
-tqdm
-numpy
-matplotlib
-scikit-learn
+matplotlib==3.9.0
+numpy==1.26.4
+scikit_learn==1.5.0
+tensorflow==2.16.1
+tqdm==4.66.4
 git+https://github.com/Revo1999/vrashelper
+pillow==10.3.0
