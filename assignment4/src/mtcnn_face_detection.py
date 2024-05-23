@@ -23,6 +23,10 @@ import vegafusion as vf
 
 
 def list_files(directory):
+    '''
+    List files in "in" folder with full paths
+    '''
+
     folders = os.listdir(directory)
 
     all_files = []
@@ -34,6 +38,16 @@ def list_files(directory):
 
 
 def check_files(file_list, wanted_filetype):
+
+    '''
+    Checks files to see if they are the wanted type
+
+    Provides overview in console
+    As well as asking users if they want to remove the files from the processing list
+    A no will quit the program
+
+    '''
+
     print(f"\nChecking {len(file_list)} files for filetype... \n")
 
     wrong_filetype = []
@@ -68,6 +82,7 @@ def check_files(file_list, wanted_filetype):
     return file_list
 
 def take_input():
+    # Takes input
     inp = input("[Y]/[N]\n")
     if inp.lower() == "y" or inp.lower() == "yes":
         return True
@@ -79,7 +94,7 @@ def take_input():
         take_input()
 
 def image_verify_and_load(img_path):
-    #Tested this with corrupted images and it works
+    #Tested this with corrupted images and it works for corruption will not detect missing bytes (truncation)
     try:
         # Opens Image
         with Image.open(img_path) as img:
@@ -94,6 +109,10 @@ def image_verify_and_load(img_path):
         return None
 
 def image_loader(image_paths_to_proces):
+
+    '''
+    Loads images from list
+    '''
 
     images = [image_verify_and_load(img_path) for img_path in tqdm_bar(image_paths_to_proces, desc="Loading images", colour='green')]
 
@@ -132,6 +151,8 @@ def image_processing(images, model, file_list):
     return results
 
 def dict_to_csv(data, savepath):
+    #Converts dict to polars dataframe
+
     dataframe = pl.from_dict(data)
     dataframe.write_csv(savepath)
 
@@ -236,6 +257,15 @@ def data_conversion(data, method):
     return joined_data, dataset_list
 
 def visualize_line_chart(data, y_value, y_title):
+    
+    '''
+    Altair plotting of data
+
+    Modified version of this template:
+    https://altair-viz.github.io/gallery/line_with_last_value_labeled.html 
+    
+    '''
+
 
     y_value = str(y_value + ":Q")
 
@@ -277,12 +307,15 @@ def main():
 
     directory_path = os.path.join(*directory)
 
+    # Checks filetypes
     files_to_proces = check_files(file_list=list_files(directory_path), wanted_filetype=".jpg")
 
     '''files_to_proces = [choice(files_to_proces) for _ in range(20)]''' # Used for testing
-
+    
+    # Loads images
     images = image_loader(files_to_proces)
 
+    # Loads model
     mtcnn = MTCNN(keep_all=True)
 
     results = image_processing(images=images, model=mtcnn, file_list=files_to_proces)
@@ -293,12 +326,11 @@ def main():
 
     pages_with_face_data, pages_list = (data_conversion(data=data, method=pages_with_faces_table))
 
+
+    # Writes Polars Dataframes to CSV's
     faces_per_page_data.write_csv("../out/faces_per_page.csv")
 
     pages_with_face_data.write_csv("../out/pages_with_faces.csv")
-
-    print(faces_list) # These list contains the datasets
-    print(pages_list) # These list contains the datasets
 
     vf.enable()
 
@@ -309,10 +341,13 @@ def main():
     for i in range(0, len(faces_list)):
         newspaper_name = (faces_list[i]['newspaper'].unique()).to_list()[0]
 
+        # Makes folders for each newspaper name
         os.mkdir(os.path.join("..","out", newspaper_name))
 
         visualize_line_chart(data=faces_list[i], y_value="faces_per_page", y_title="faces per page").save(f"../out/{newspaper_name}/faces_per_page.png")
         visualize_line_chart(data=pages_list[i], y_value="percent_of_pages_with_face", y_title="Percent of pages with face").save(f"../out/{newspaper_name}/percent_of_pages_with_face.png")
+        
+        # Writes Polars Dataframes to CSV's
         faces_list[i].write_csv(f"../out/{newspaper_name}/faces_per_page.csv")
         pages_list[i].write_csv(f"../out/{newspaper_name}/percent_of_pages_with_face.csv")
         

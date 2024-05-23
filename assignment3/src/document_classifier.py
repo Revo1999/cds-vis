@@ -43,6 +43,9 @@ import matplotlib.pyplot as plt
 
 
 def list_files(directory):
+    '''
+    Gets filepaths
+    '''
     folders = os.listdir(directory)
 
     all_files = []
@@ -54,6 +57,17 @@ def list_files(directory):
 
 
 def check_files(file_list, wanted_filetype):
+    '''
+    Checks files to see if they are the wanted type
+
+    Provides overview in console
+    As well as asking users if they want to remove the files from the processing list
+    A no will quit the program
+
+    '''
+
+
+
     print(f"\nChecking {len(file_list)} files for filetype... \n")
 
     wrong_filetype = []
@@ -100,6 +114,7 @@ def take_input():
           
 
 def create_labels_list(directory):
+    # Folder names becomes a list of labels
     folders = os.listdir(directory)
     return folders
 
@@ -142,6 +157,8 @@ def load_vgg16():
     return model
 
 def plot_history(H, epochs):
+    #Plot and saves train_loss, val_loss and train_acc and val_acc
+
     plt.figure(figsize=(12,6))
     plt.subplot(1,2,1)
     plt.plot(np.arange(0, epochs), H.history["loss"], label="train_loss")
@@ -184,16 +201,21 @@ def main():
     del X, y
     gc.collect()
 
+    # Converts to numpy array
     X_train = np.array(X_train)
     X_test = np.array(X_test)
 
+    # Binarizes labels
     lb = LabelBinarizer()
     y_train = lb.fit_transform(y_train)
     y_test = lb.fit_transform(y_test)
 
     print(X_train.shape)
 
+    # Loads VGG16
     model = load_vgg16()
+
+    #Exponential Decay options
 
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
         initial_learning_rate=0.01,
@@ -218,12 +240,14 @@ def main():
     #plots models history
     plot_history(H, 10)
 
+    # The model predicts
     predictions = model.predict(X_test, batch_size=128)
 
     print(classification_report(y_test.argmax(axis=1),
                                 predictions.argmax(axis=1),
                                 target_names=labels))
 
+    # Saves classification report
     with open("../out/tobacco_report.txt", "w") as file:
             file.write(classification_report(y_test.argmax(axis=1),
                                 predictions.argmax(axis=1),
@@ -232,7 +256,7 @@ def main():
     print("Classification report saved!")
 
 
-
+    # Saves the model
     print("saving model")
     model.save('../model/tobacco_model.h5')
     print("model saved")

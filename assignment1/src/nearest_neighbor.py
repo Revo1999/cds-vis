@@ -21,6 +21,10 @@ import matplotlib.image as mpimg
 import pandas as pd
 
 def argument_collection():
+    '''
+    Creates and parses command-line arguments to get the name of the image that will be compared to the rest of the dataset.
+    '''
+    
     parser = argparse.ArgumentParser()
    
     parser.add_argument(
@@ -33,6 +37,11 @@ def argument_collection():
 
 
 def model_load():
+
+    '''
+    Loads and return VGG16 model with input parameters for image sizes
+    '''
+
     print("Loading model")
 
     model = VGG16(weights='imagenet', 
@@ -45,6 +54,11 @@ def model_load():
 
 
 def load_neighbor(feature_list):
+
+    '''
+    Loads and return Sci-Kit Learns NearestNeighbor model
+    '''
+
     neighbors = NearestNeighbors(n_neighbors=6, 
                                 algorithm='brute',
                                 metric='cosine').fit(feature_list)
@@ -55,7 +69,7 @@ def load_neighbor(feature_list):
 def extract_features(img_path, model):
    
     """
-    Extract features from image data using a model
+    Extract features from image data using a given model
     """
     
     # Define input image shape - remember we need to reshape
@@ -86,6 +100,12 @@ def extract_features(img_path, model):
 
 def get_target_idx(filenames, target_image):
 
+    '''
+    Looks through files to find the index of the chosen image
+    Essentially converting filename to index
+    '''
+
+
     target_idx = None
     idx = 0
     for files in filenames:
@@ -97,6 +117,17 @@ def get_target_idx(filenames, target_image):
 
 
 def apply_neighbor(filenames, target_image):
+        
+        '''
+        Loads the model, finds the index of the target image, extracts features from all images,
+        and applies the NearestNeighbors model to find the top 5 most similar images to the target image.
+        Returns the distances and indices of the nearest neighbors, along with the target index.
+
+        Using a lot of the functions written above
+        '''
+
+
+
         model = model_load()
 
         target_idx = get_target_idx(filenames, target_image)
@@ -130,7 +161,7 @@ def get_filenames():
 
 
 def main():
-    target_image = os.path.join("..", "in", argument_collection().Image_name)
+    target_image = os.path.join("..", "in", argument_collection().Image_name) # Parses arg as chosen image
 
     filenames = get_filenames()
 
@@ -140,21 +171,24 @@ def main():
     f, axarr = plt.subplots(1,6, figsize=(15, 6))
     f.subplots_adjust(wspace=2)
 
+    # Plots the first image
     axarr[0].imshow(mpimg.imread(filenames[target_idx]))
     axarr[0].axis('off')
     axarr[0].set_title(f'Chosen image: {filenames[target_idx].split("/")[2]}', fontsize = 7)
     df_to_export = []
     df_to_export.append( (filenames[target_idx].split("/")[2], 0) )
 
-
+    # Plots the nearest images
     for i in range(1,6):
         axarr[i].imshow(mpimg.imread(filenames[idxs[i-1]]))
         axarr[i].axis('off')
         axarr[i].set_title(f'Image: {filenames[idxs[i-1]].split("/")[2]} \nDistance: {"%.2f" % distance_list[i-1]}', fontsize = 7)
         df_to_export.append( (filenames[idxs[i-1]].split("/")[2], distance_list[i-1]) )
 
+    # Saves plot
     plt.savefig("../out/nearest_neighbor.png", bbox_inches='tight', dpi=400)
 
+    # Converts nested list to dataframe and then saves it
     df = pd.DataFrame(df_to_export, columns = ['Filename', 'Distance'])
     df.to_csv(f"../out/nearest_neighbor_{argument_collection().Image_name}_results.csv", index=False)
 

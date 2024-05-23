@@ -16,10 +16,12 @@ from tqdm import tqdm
 
 
 def img_normalize(image):
+    #Normalizes images
     normalized_image = cv2.normalize(image, None, 0, 1.0, cv2.NORM_MINMAX)
     return normalized_image
 
 def img_grey(image):
+    # Converts images to greyscale
     grey_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return grey_img
 
@@ -28,13 +30,17 @@ def img_processor(image_variable):
     
     #Note i normalize before greyscaling thinking it's more computational power, but more information get normalized since the normalization have 3 channels to normalize.
     #Though im not completely sure this is regarded as good practice?
+
+    # Applying img_normalize() and img_grey() to all images
     
     for image in tqdm(image_variable, colour='green',desc='Normalising and converting to greyscale'):
         images_output.append(img_grey(img_normalize(image)))
-
+    
+    # Returns images in reshaped Numpy Arrays
     return np.array(images_output).reshape(-1, 1024)
 
 def loss_curve_plotter(classifier, plot_save_path):
+    #Plots and saves loss curve
     plt.figure(figsize=(10, 5))
     plt.plot(classifier.loss_curve_, label='Training Loss')
     plt.title('Loss Curve')
@@ -55,17 +61,20 @@ def main():
     y_train_processed = y_train.flatten()
     y_test_processed = y_test.flatten()
 
-
+    # Loading and fitting model
     print("Fitting... this might take a while")
     clf =  MLPClassifier(hidden_layer_sizes = (128,), max_iter=1000, random_state = 1964, early_stopping=True, verbose=True).fit(X_train_processed, y_train_processed)
 
     y_pred = clf.predict(X_test_processed)
 
+    # Writes classification report
     with open("../out/neural.txt", "w") as file:
             file.write(classification_report(y_test_processed, y_pred, target_names=cifar10_label_names))
-
+    
+    # Save path for plot
     plot_save_path = "../out/neural_loss_curve.png"
 
+    # Plots and saves loss curve plot
     loss_curve_plotter(clf, plot_save_path)
 
     print("Classification report saved!")

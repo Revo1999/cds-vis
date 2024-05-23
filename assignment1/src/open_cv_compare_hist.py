@@ -73,6 +73,11 @@ def comparer(chosen_image, chosen_file_type, directory, data, metric):
 
 
 def argument_collection():
+
+    '''
+    Creates and parses command-line arguments to get the name of the image that will be compared to the rest of the dataset.
+    '''
+
     parser = argparse.ArgumentParser()
    
     parser.add_argument(
@@ -88,7 +93,7 @@ def main():
                                 'in',)
 
     data = os.listdir(directory)
-
+    # Comparisson metric
     metric = cv2.HISTCMP_CHISQR
 
     top_value_list = []
@@ -96,29 +101,37 @@ def main():
     save_tables_location = os.path.join('..',
                                         'out')
 
+    # Gets chosen image from from args
     chosen_image_name = argument_collection().Image_name
-
+    
+    # Applies comparer function
     results = comparer(chosen_image=chosen_image_name, chosen_file_type=".jpg", directory=directory, data=data, metric=metric)
 
+    # Appends chosen image to results with a distance value of 0
     results.append( (argument_collection().Image_name, 0) )
 
+    # Sorts the list by distance, bringing chosen image first
     df2 = pd.DataFrame(results, columns = ['Filename', 'Distance']).sort_values(by=['Distance'])
 
+    # Saves CSV
     df2.to_csv(f"{save_tables_location}/compare_hist_{chosen_image_name}_results.csv", index=False)
 
-
+    # Plotting images
     f, axarr = plt.subplots(1, 6, figsize=(15, 6))
     f.subplots_adjust(wspace=2)
 
+    # Plots chosen image
     axarr[0].imshow(mpimg.imread(os.path.join(directory, chosen_image_name)))
     axarr[0].axis('off')
     axarr[0].set_title(f'Chosen image: {chosen_image_name}', fontsize=7)
 
+    # Plots the other images
     for i in range(1,6):
         axarr[i].imshow(mpimg.imread(os.path.join(directory, df2.iloc[i]['Filename'])))
         axarr[i].axis('off')
         axarr[i].set_title(f'Image: {df2.iloc[i]["Filename"]} \nDistance: {df2.iloc[i]["Distance"]:.2f}', fontsize=7)
 
+    # Saves plot
     plt.savefig(os.path.join(save_tables_location, "compare_hist.png"), bbox_inches='tight', dpi=400)
 
     print('Done! Table created.')
