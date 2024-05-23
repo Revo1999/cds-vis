@@ -4,7 +4,9 @@
 source assignment4_venv/bin/activate
 
 # run the code
-python src/mtcnn_face_detection.py
+cd src
+python mtcnn_face_detection.py
+cd ..
 
 # close the environment
 deactivate

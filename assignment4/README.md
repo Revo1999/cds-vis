@@ -114,7 +114,7 @@ This assignment works with a corpus of historic Swiss newspapers: the Journal de
     ```
 <br><br>
 
-5. Runs ```mtcnn_face_detection.py``` by activating the virtual environment, and after the program has ran it will close the environment again.<br>
+5. Runs ```mtcnn_face_detection.py``` by activating the virtual environment, changing directory into src and after the program has ran, it will change back and close the environment again.<br>
     ``` sh
     bash run.sh
     ```
